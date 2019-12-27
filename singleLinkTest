@@ -1,0 +1,272 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+typedef struct Node
+{
+    struct Node* next;
+    int value;
+}Node;
+
+Node* reverseLink(Node* link)
+{
+    Node* current = link;
+    Node* previous = link;
+    Node* inverseHead = NULL;
+    Node* inverseCurrent = inverseHead;
+    int i,j,num = 1;
+
+    if((link == NULL) || (link->next == NULL))
+    {
+        return link;
+    }
+    
+    while(current->next != NULL)
+    {
+        num++;
+        current = current->next;
+    }
+
+
+    printf("the value of num is %d\n",num);
+
+    for(i = 0; i < num; i++)
+    {
+        //printf("reverse %i node\n",i);
+        current = link;
+        previous = link;
+        if(link == NULL)
+        {
+            break;
+        }
+
+        if(current->next == NULL)
+        {
+            inverseCurrent->next = current;
+            break; 
+        }
+
+        while(current->next != NULL)
+        {
+            //printf("the %i node include value %d\n", i, current->value);
+            previous = current;
+            current = current->next;
+        }
+
+        previous->next = NULL;
+        if(inverseHead == NULL)
+        {
+            inverseHead = current;
+            inverseCurrent = inverseHead;
+            inverseCurrent->next = NULL; 
+        }
+        else
+        {
+            inverseCurrent->next = current; 
+            inverseCurrent = inverseCurrent->next;
+            inverseCurrent->next = NULL; 
+        }
+    }
+       
+    return inverseHead;
+}
+
+Node* sortLinkByValue(Node* link)
+{
+    Node* head = link;
+    Node* sorted = link;
+    Node* prePrevious = link;
+    Node* previous = prePrevious->next;
+    Node* current = link;
+    int nodeNum = 1;
+    int i,j,k;
+
+    if((link == NULL)||(link->next == NULL))
+    {
+        return link;
+    }
+
+    while(current->next != NULL)
+    {
+        nodeNum++;
+        current = current->next;
+    }
+   
+    for(i = nodeNum; i > 0; i--)
+    {
+        previous = head;
+        current = previous->next;
+
+        for(j = 1; j <= i; j++)
+        {
+            if(j == 1)
+            {
+                if(previous->value > current->value)
+                {
+                   previous->next = current->next;
+                   current->next = previous;
+                   head = current; 
+                }
+            }
+            else if(j > 1)
+            {
+                if(previous->value > current->value)
+                {
+                    previous->next = current->next;
+                    current->next= previous;
+                    prePrevious->next = current; 
+                }
+            }
+            
+            previous = head;
+            current = previous->next;
+            prePrevious = head;
+            for(k=2; k <= j; k++)
+            {
+                prePrevious = previous;
+                previous = current;
+                current = current->next;
+            }
+        }
+    }
+    return head;
+}
+
+Node* insertLinkByValue(Node* link, int value)
+{
+    Node* insertedNode;
+    Node* current;
+    Node* previous;
+
+    insertedNode = (Node*)(malloc(sizeof(Node)));
+    insertedNode->value = value;
+    insertedNode->next = NULL;
+
+    if(link == NULL)
+    {
+        link = insertedNode;
+        return link; 
+    }
+    else if(link->next == NULL)
+    {
+        if(link->value > insertedNode->value)
+        {
+            insertedNode->next = link;
+            link = insertedNode;
+        }
+        else
+        {
+            link->next = insertedNode;
+        }
+    }
+    else
+    {
+        previous = link; 
+        current = link->next;
+    }
+
+    while( current != NULL)
+    {
+        if(current->value >= value)
+        {
+            insertedNode->next = current->next;
+            current->next = insertedNode;     
+            return link;
+        }
+        else
+        {
+            previous = current;
+            current = current->next;
+        }
+    }
+    previous->next = insertedNode;
+
+    return link;
+}
+
+Node* insertLinkLast(Node* link, int value)
+{
+    Node* last;
+    Node* current = link;
+
+    if(current == NULL)
+    {
+        current = (Node*)(malloc(sizeof(Node)));
+        current->value = value;
+        current->next = NULL;
+        link = current;
+    }
+    else
+    {
+        while(current->next != NULL)
+        {
+            current = current->next;
+        }
+        last = (Node*)(malloc(sizeof(Node)));
+        last->next = NULL;
+        last->value = value;
+        current->next = last;
+    }
+    return link;
+}
+
+void main(void)
+{
+   int a;
+   Node* head = NULL;
+   Node* last = NULL;
+   Node* current = NULL;
+   int i;
+
+
+   srand((unsigned)time(NULL));
+   for(i = 0; i < 10; i++)
+   {
+       a = rand()%255;
+       printf("the %d node value is %d\n", i, a);
+       head = insertLinkLast(head, a); 
+   } 
+
+   printf("after initialized\n");
+
+   current = head;
+   while(current != NULL)
+   {
+       printf("%d\n",current->value);
+       current = current->next;
+   }
+
+   head = sortLinkByValue(head);
+
+   printf("after sorted by value\n");
+
+   current = head;
+   while(current != NULL)
+   {
+       printf("%d\n",current->value);
+       current = current->next;
+   }
+
+
+   head = insertLinkByValue(head,125);
+
+   printf("after add new value\n");
+   current = head;
+   while(current != NULL)
+   {
+       printf("%d\n",current->value);
+       current = current->next;
+   }
+
+   head = reverseLink(head);
+   printf("after the order reversed\n");
+   current = head;
+   while(current != NULL)
+   {
+       printf("%d\n",current->value);
+       current = current->next;
+   }
+}
+
+
